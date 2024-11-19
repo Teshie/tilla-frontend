@@ -15,6 +15,7 @@ import {
   faExclamationTriangle,
 } from "@fortawesome/free-solid-svg-icons";
 import logoWhite from "../../../public/assets/white-logo.png";
+import Link from "next/link";
 
 const Header = () => {
   return (
@@ -28,10 +29,13 @@ const Header = () => {
       {/* Center Buttons Section */}
       <div className="flex justify-center items-center space-x-3">
         <button className="text-lg font-bold text-white hover:text-red-600 hover:bg-white px-2 py-1 rounded">
-          Tilla Members
+          <Link href="/">Tilla Members</Link>
         </button>
         <button className="text-lg font-bold text-white hover:text-red-600 hover:bg-white px-2 py-1 rounded">
-          Tilla Providers
+          <Link href="/components/provider/home">Tilla Providers</Link>
+        </button>
+        <button className="text-lg font-bold text-white hover:text-red-600 hover:bg-white px-2 py-1 rounded">
+          <Link href="/components/broker/home">Tilla Brokers</Link>
         </button>
       </div>
 

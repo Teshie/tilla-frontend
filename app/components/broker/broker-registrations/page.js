@@ -14,73 +14,15 @@ import axios from "axios";
 import PricingPlans from "../../pricing/page";
 import ReviewInformation from "../../shared/ReviewInformation";
 
-const steps = [
-  "Representative Informatiom",
-  "Primary Member Information",
-  "Address",
-  "Review",
-];
+const steps = ["Primary Member Information", "Address", "Review"];
 const API_POST = "http://api.tillahealthinsurance.com/members/register";
 
 // Define all fields for each step
 const fieldDefinitions = {
-  // Existing Primary Member Information
-  // Representing Person Information
-  representative: [
-    {
-      name: "rep_last_name",
-      label: "Representative's Last Name",
-      type: "text",
-      required: true,
-    },
-    {
-      name: "rep_first_name",
-      label: "Representative's First Name",
-      type: "text",
-      required: true,
-    },
-    {
-      name: "rep_middle_initial",
-      label: "Representative's Middle Initial",
-      type: "text",
-    },
-    {
-      name: "rep_relationship",
-      label: "Relationship to Primary Member",
-      options: ["Legal Guardian", "Parent", "Power of Attorney"],
-      type: "select",
-      required: true,
-    },
-    {
-      name: "rep_phone",
-      label: "Representative’s Phone Number",
-      type: "text",
-      required: true,
-    },
-    {
-      name: "rep_email",
-      label: "Representative’s Email Address",
-      type: "email",
-    },
-  ],
-  user: [
-    {
-      name: "last_name",
-      label: "Primary Member's Last Name",
-      type: "text",
-      required: true,
-    },
-    {
-      name: "first_name",
-      label: "Primary Member's First Name",
-      type: "text",
-      required: true,
-    },
-    {
-      name: "middle_initial",
-      label: "Primary Member's Middle Initial",
-      type: "text",
-    },
+  personalInformation: [
+    { name: "first_name", label: "First Name", type: "text", required: true },
+    { name: "last_name", label: "Last Name", type: "text", required: true },
+    { name: "middle_initial", label: "Middle Initial", type: "text" },
     {
       name: "gender",
       label: "Gender",
@@ -95,62 +37,196 @@ const fieldDefinitions = {
       required: true,
     },
     {
-      name: "marital_status",
-      label: "Marital Status",
-      type: "select",
-      options: ["Single", "Married", "Widowed", "Divorced", "Separated"],
-      required: true,
-    },
-    {
-      name: "email",
-      label: "Primary Member’s Email Address",
+      name: "email_address",
+      label: "Email Address",
       type: "email",
       required: true,
     },
     {
-      name: "phone",
-      label: "Primary Member’s Phone Number",
+      name: "phone_number",
+      label: "Phone Number",
       type: "text",
       required: true,
     },
   ],
-
-  // Address Information
-  address: [
+  businessInformation: [
     {
-      name: "address1",
-      label: "Mailing Address Line 1",
+      name: "company_name",
+      label: "Company/Agency Name",
       type: "text",
       required: true,
     },
-    { name: "city", label: "City", type: "text", required: true },
     {
-      name: "region_or_state",
-      label: "Region/State",
-      type: "text",
-      required: false,
+      name: "business_type",
+      label: "Business Type",
+      type: "select",
+      options: ["Private", "Group", "Sector"],
+      required: true,
     },
     {
-      name: "wereda",
-      label: "Woreda",
+      name: "business_license_number",
+      label: "Business License Number",
       type: "text",
-      required: false,
+      required: true,
     },
     {
-      name: "kifle_ketema_or_zip",
+      name: "tax_identification_number",
+      label: "Tax Identification Number (TIN)",
+      type: "text",
+      required: true,
+    },
+    {
+      name: "business_address_line_1",
+      label: "Address Line 1",
+      type: "text",
+      required: true,
+    },
+    {
+      name: "business_address_line_2",
+      label: "Address Line 2 (optional)",
+      type: "text",
+    },
+    { name: "business_city", label: "City", type: "text", required: true },
+    {
+      name: "business_state",
+      label: "State/Region",
+      type: "text",
+      required: true,
+    },
+    {
+      name: "business_kifle_ketema",
+      label: "Kifle Ketema/Zone (if applicable)",
+      type: "text",
+    },
+    {
+      name: "business_zip_code",
+      label: "Zip Code",
+      type: "text",
+      required: true,
+    },
+  ],
+  professionalInformation: [
+    {
+      name: "broker_id_number",
+      label: "Broker ID Number (if already assigned)",
+      type: "text",
+    },
+    {
+      name: "years_of_experience",
+      label: "Years of Experience",
+      type: "number",
+      required: true,
+    },
+    {
+      name: "specialization",
+      label: "Specialization",
+      type: "select",
+      options: [
+        "Individual Plans",
+        "Family Plans",
+        "NGO Plans",
+        "Diaspora Health Connect",
+        "Other (specify)",
+      ],
+      required: true,
+    },
+    {
+      name: "licensing_states",
+      label: "Licensing State(s)",
+      type: "text",
+      required: true,
+    },
+    {
+      name: "license_issued_date",
+      label: "License Issued Date",
+      type: "date",
+      required: true,
+    },
+    {
+      name: "license_expiry_date",
+      label: "License Expiry Date",
+      type: "date",
+      required: true,
+    },
+  ],
+  identificationAndPersonalDetails: [
+    { name: "provider_id", label: "Provider ID", type: "text", required: true },
+    { name: "tin_number", label: "TIN Number", type: "text", required: true },
+    {
+      name: "provider_last_name",
+      label: "Last Name/Facility Name",
+      type: "text",
+      required: true,
+    },
+    { name: "provider_first_name", label: "First Name", type: "text" },
+    { name: "provider_middle_initial", label: "Middle Initial", type: "text" },
+    { name: "provider_title", label: "Title", type: "text" },
+    { name: "provider_contact_person", label: "Contact Person", type: "text" },
+  ],
+  addressAndContactDetails: [
+    {
+      name: "provider_address",
+      label: "Address",
+      type: "text",
+      required: true,
+    },
+    { name: "provider_city", label: "City", type: "text", required: true },
+    { name: "provider_county", label: "County", type: "text" },
+    { name: "provider_region", label: "Region/Zone", type: "text" },
+    {
+      name: "provider_kifle_ketema",
       label: "Kifle Ketema/Zip Code",
       type: "text",
     },
-    { name: "country", label: "Country", type: "text", required: true },
+    { name: "provider_zip_code", label: "Zip Code", type: "text" },
+    {
+      name: "provider_phone_number",
+      label: "Phone Number",
+      type: "text",
+      required: true,
+    },
+    { name: "provider_fax", label: "Fax", type: "text" },
+    {
+      name: "provider_email",
+      label: "Email Address",
+      type: "email",
+      required: true,
+    },
+  ],
+  professionalAndGroupDetails: [
+    { name: "provider_type", label: "Provider Type", type: "text" },
+    {
+      name: "provider_primary_specialty",
+      label: "Primary Specialty",
+      type: "text",
+    },
+    { name: "provider_sub_specialty", label: "Sub Specialty", type: "text" },
+    {
+      name: "medicare_provider_number",
+      label: "Medicare Provider Number",
+      type: "text",
+    },
+    { name: "provider_group_name", label: "Group Name", type: "text" },
+    {
+      name: "provider_group_contact_person",
+      label: "Group Contact Person",
+      type: "text",
+    },
+    {
+      name: "provider_group_phone_number",
+      label: "Group Phone Number",
+      type: "text",
+    },
+    { name: "provider_group_address", label: "Group Address", type: "text" },
   ],
 };
 
-const MemberBasicRegistration = () => {
+const BrokerRegistration = () => {
   const [activeStep, setActiveStep] = useState(0);
   const [formData, setFormData] = useState({
-    representative: {},
-    user: {},
-    address: {},
+    personalInformation: {},
+    businessInformation: {},
+    professionalInformation: {},
   });
 
   const [errors, setErrors] = useState({});
@@ -299,6 +375,7 @@ const MemberBasicRegistration = () => {
                 ))}
               </Box>
             )}
+
             {activeStep < steps.length - 1 && (
               <Box
                 sx={{ display: "flex", justifyContent: "space-between", mt: 3 }}
@@ -344,4 +421,4 @@ const MemberBasicRegistration = () => {
   );
 };
 
-export default MemberBasicRegistration;
+export default BrokerRegistration;

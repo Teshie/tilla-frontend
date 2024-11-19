@@ -74,12 +74,11 @@ const fieldDefinitions = {
       type: "date",
       required: true,
     },
-    { name: "age", label: "Age", type: "number", required: true },
     {
       name: "marital_status",
       label: "Marital Status",
       type: "select",
-      options: ["Single", "Married"],
+      options: ["Single", "Married", "Widowed", "Divorced", "Separated"],
       required: true,
     },
     {
@@ -121,7 +120,7 @@ const fieldDefinitions = {
 const MemberBasicRegistration = () => {
   const [activeStep, setActiveStep] = useState(0);
   const [formData, setFormData] = useState({
-    selection:{},
+    selection: {},
     address: {},
     user: {},
   });

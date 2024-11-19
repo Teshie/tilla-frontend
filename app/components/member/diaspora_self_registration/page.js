@@ -12,6 +12,7 @@ import {
 } from "@mui/material";
 import axios from "axios";
 import PricingPlans from "../../pricing/page";
+import ReviewInformation from "../../shared/ReviewInformation";
 
 const steps = ["Primary Member Information", "Address", "Review"];
 const API_POST = "http://api.tillahealthinsurance.com/members/register";
@@ -49,12 +50,11 @@ const fieldDefinitions = {
       type: "date",
       required: true,
     },
-    { name: "age", label: "Age", type: "number", required: true },
     {
       name: "marital_status",
       label: "Marital Status",
       type: "select",
-      options: ["Single", "Married"],
+      options: ["Single", "Married", "Widowed", "Divorced", "Separated"],
       required: true,
     },
     {
@@ -79,10 +79,16 @@ const fieldDefinitions = {
     },
     { name: "city", label: "City", type: "text", required: true },
     {
-      name: "region_or_zone",
-      label: "Region/Zone",
+      name: "region_or_state",
+      label: "Region/State",
       type: "text",
-      required: true,
+      required: false,
+    },
+    {
+      name: "wereda",
+      label: "Woreda",
+      type: "text",
+      required: false,
     },
     {
       name: "kifle_ketema_or_zip",
@@ -245,75 +251,6 @@ const MemberBasicRegistration = () => {
                       ))}
                   </TextField>
                 ))}
-              </Box>
-            )}
-
-            {activeStep === 4 && (
-              <Box sx={{ padding: 3 }}>
-                <Typography>Dependent Children Information:</Typography>
-                {formData.children.map((child, index) => (
-                  <Box
-                    key={index}
-                    sx={{
-                      display: "flex",
-                      gap: 2,
-                      marginBottom: 2,
-                    }}
-                  >
-                    <TextField
-                      label="Full Name"
-                      name="full_name"
-                      value={child.full_name}
-                      onChange={(e) => handleChildChange(index, e)}
-                      size="small"
-                      margin="dense"
-                    />
-                    <TextField
-                      select
-                      label="Select Gender"
-                      name="gender"
-                      value={child.gender}
-                      onChange={(e) => handleChildChange(index, e)}
-                      size="small"
-                      margin="dense"
-                    >
-                      {["Male", "Female", "Other"].map((option) => (
-                        <MenuItem key={option} value={option}>
-                          {option}
-                        </MenuItem>
-                      ))}
-                    </TextField>
-                    <TextField
-                      label="Date of Birth"
-                      name="dob"
-                      type="date"
-                      value={child.dob}
-                      onChange={(e) => handleChildChange(index, e)}
-                      size="small"
-                      margin="dense"
-                      InputLabelProps={{ shrink: true }}
-                    />
-                    <TextField
-                      label="Age"
-                      name="age"
-                      type="number"
-                      value={child.age}
-                      onChange={(e) => handleChildChange(index, e)}
-                      size="small"
-                      margin="dense"
-                    />
-                    <Button
-                      variant="outlined"
-                      color="error"
-                      onClick={() => removeChild(index)}
-                    >
-                      Remove
-                    </Button>
-                  </Box>
-                ))}
-                <Button variant="outlined" onClick={addChild}>
-                  Add Child
-                </Button>
               </Box>
             )}
 

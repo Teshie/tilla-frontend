@@ -15,142 +15,94 @@ import PricingPlans from "../../pricing/page";
 import ReviewInformation from "../../shared/ReviewInformation";
 
 const steps = [
-  "Representative Informatiom",
-  "Primary Member Information",
-  "Address",
+  "Personal Details",
+  "Contact and Address Details",
+  "Professional and Group Details",
   "Review",
 ];
-const API_POST = "http://api.tillahealthinsurance.com/members/register";
+// const API_POST = "http://api.tillahealthinsurance.com/members/register";
+const API_POST = "http://127.0.0.1:8000/api/ngo/";
 
 // Define all fields for each step
 const fieldDefinitions = {
-  // Existing Primary Member Information
-  // Representing Person Information
-  representative: [
+  identificationAndPersonalDetails: [
+    { name: "provider_id", label: "Provider ID", type: "text", required: true },
+    { name: "tin_number", label: "TIN Number", type: "text", required: true },
     {
-      name: "rep_last_name",
-      label: "Representative's Last Name",
+      name: "provider_last_name",
+      label: "Last Name/Facility Name",
       type: "text",
       required: true,
     },
-    {
-      name: "rep_first_name",
-      label: "Representative's First Name",
-      type: "text",
-      required: true,
-    },
-    {
-      name: "rep_middle_initial",
-      label: "Representative's Middle Initial",
-      type: "text",
-    },
-    {
-      name: "rep_relationship",
-      label: "Relationship to Primary Member",
-      options: ["Legal Guardian", "Parent", "Power of Attorney"],
-      type: "select",
-      required: true,
-    },
-    {
-      name: "rep_phone",
-      label: "Representative’s Phone Number",
-      type: "text",
-      required: true,
-    },
-    {
-      name: "rep_email",
-      label: "Representative’s Email Address",
-      type: "email",
-    },
+    { name: "provider_first_name", label: "First Name", type: "text" },
+    { name: "provider_middle_initial", label: "Middle Initial", type: "text" },
+    { name: "provider_title", label: "Title", type: "text" },
+    { name: "provider_contact_person", label: "Contact Person", type: "text" },
   ],
-  user: [
+  addressAndContactDetails: [
     {
-      name: "last_name",
-      label: "Primary Member's Last Name",
+      name: "provider_address",
+      label: "Address",
       type: "text",
       required: true,
     },
+    { name: "provider_city", label: "City", type: "text", required: true },
+    { name: "provider_county", label: "County", type: "text" },
+    { name: "provider_region", label: "Region/Zone", type: "text" },
     {
-      name: "first_name",
-      label: "Primary Member's First Name",
-      type: "text",
-      required: true,
-    },
-    {
-      name: "middle_initial",
-      label: "Primary Member's Middle Initial",
-      type: "text",
-    },
-    {
-      name: "gender",
-      label: "Gender",
-      type: "select",
-      options: ["Male", "Female"],
-      required: true,
-    },
-    {
-      name: "date_of_birth",
-      label: "Date of Birth",
-      type: "date",
-      required: true,
-    },
-    {
-      name: "marital_status",
-      label: "Marital Status",
-      type: "select",
-      options: ["Single", "Married", "Widowed", "Divorced", "Separated"],
-      required: true,
-    },
-    {
-      name: "email",
-      label: "Primary Member’s Email Address",
-      type: "email",
-      required: true,
-    },
-    {
-      name: "phone",
-      label: "Primary Member’s Phone Number",
-      type: "text",
-      required: true,
-    },
-  ],
-
-  // Address Information
-  address: [
-    {
-      name: "address1",
-      label: "Mailing Address Line 1",
-      type: "text",
-      required: true,
-    },
-    { name: "city", label: "City", type: "text", required: true },
-    {
-      name: "region_or_state",
-      label: "Region/State",
-      type: "text",
-      required: false,
-    },
-    {
-      name: "wereda",
-      label: "Woreda",
-      type: "text",
-      required: false,
-    },
-    {
-      name: "kifle_ketema_or_zip",
+      name: "provider_kifle_ketema",
       label: "Kifle Ketema/Zip Code",
       type: "text",
     },
-    { name: "country", label: "Country", type: "text", required: true },
+    { name: "provider_zip_code", label: "Zip Code", type: "text" },
+    {
+      name: "provider_phone_number",
+      label: "Phone Number",
+      type: "text",
+      required: true,
+    },
+    { name: "provider_fax", label: "Fax", type: "text" },
+    {
+      name: "provider_email",
+      label: "Email Address",
+      type: "email",
+      required: true,
+    },
+  ],
+  professionalAndGroupDetails: [
+    { name: "provider_type", label: "Provider Type", type: "text" },
+    {
+      name: "provider_primary_specialty",
+      label: "Primary Specialty",
+      type: "text",
+    },
+    { name: "provider_sub_specialty", label: "Sub Specialty", type: "text" },
+    {
+      name: "medicare_provider_number",
+      label: "Medicare Provider Number",
+      type: "text",
+    },
+    { name: "provider_group_name", label: "Group Name", type: "text" },
+    {
+      name: "provider_group_contact_person",
+      label: "Group Contact Person",
+      type: "text",
+    },
+    {
+      name: "provider_group_phone_number",
+      label: "Group Phone Number",
+      type: "text",
+    },
+    { name: "provider_group_address", label: "Group Address", type: "text" },
   ],
 };
 
-const MemberBasicRegistration = () => {
+const ProviderRegistrations = () => {
   const [activeStep, setActiveStep] = useState(0);
   const [formData, setFormData] = useState({
-    representative: {},
-    user: {},
-    address: {},
+    identificationAndPersonalDetails: {},
+    addressAndContactDetails: {},
+    professionalAndGroupDetails: {},
   });
 
   const [errors, setErrors] = useState({});
@@ -235,13 +187,10 @@ const MemberBasicRegistration = () => {
 
   const getStepFields = () => {
     const stepKeys = Object.keys(fieldDefinitions);
-    if (
-      (activeStep === 3 && formData.selection.plan_type !== "Family") ||
-      (activeStep === 4 && formData.selection.plan_type !== "Family")
-    )
-      return [];
+
     return fieldDefinitions[stepKeys[activeStep]] || [];
   };
+  console.log(formData, "formdata");
 
   const getStepDataKey = () => {
     const stepKeys = Object.keys(fieldDefinitions);
@@ -299,6 +248,7 @@ const MemberBasicRegistration = () => {
                 ))}
               </Box>
             )}
+
             {activeStep < steps.length - 1 && (
               <Box
                 sx={{ display: "flex", justifyContent: "space-between", mt: 3 }}
@@ -344,4 +294,4 @@ const MemberBasicRegistration = () => {
   );
 };
 
-export default MemberBasicRegistration;
+export default ProviderRegistrations;

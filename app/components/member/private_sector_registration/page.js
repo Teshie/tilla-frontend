@@ -13,7 +13,7 @@ import {
 
 import axios from "axios";
 import PricingPlans from "../../pricing/page";
-import ReviewInformation from "../family_individual_registration/ReviewInformation";
+import ReviewInformation from "../../shared/ReviewInformation";
 
 const steps = [
   "Company Information",
@@ -41,12 +41,6 @@ const fieldDefinitions = {
     {
       name: "industry_type",
       label: "Industry Type",
-      type: "text",
-      required: true,
-    },
-    {
-      name: "country_of_incorporation",
-      label: "Country of Incorporation",
       type: "text",
       required: true,
     },

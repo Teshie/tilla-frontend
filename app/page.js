@@ -9,7 +9,7 @@ export default function Home() {
   return (
     <div>
       <MemberInformation /> {/* Landing or main page content */}
-      <PricingPlans/>
+      {/* <PricingPlans/> */}
     </div>
   );
 }

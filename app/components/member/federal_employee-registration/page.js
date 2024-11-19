@@ -12,7 +12,7 @@ import {
 } from "@mui/material";
 import axios from "axios";
 import PricingPlans from "../../pricing/page";
-import ReviewInformation from "../family_individual_registration/ReviewInformation";
+import ReviewInformation from "../../shared/ReviewInformation";
 
 const steps = [
   "Government Organization Information",

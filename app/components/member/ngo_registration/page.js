@@ -12,7 +12,7 @@ import {
 } from "@mui/material";
 import axios from "axios";
 import PricingPlans from "../../pricing/page";
-import ReviewInformation from "../family_individual_registration/ReviewInformation";
+import ReviewInformation from "../../shared/ReviewInformation";
 
 const steps = [
   "NGO Information",
@@ -21,9 +21,10 @@ const steps = [
   "Enrollment  Information",
   "Identification",
   "Emergency Contact Information",
-"Review",
+  "Review",
 ];
-const API_POST = "http://api.tillahealthinsurance.com/members/register";
+// const API_POST = "http://api.tillahealthinsurance.com/members/register";
+const API_POST = "http://127.0.0.1:8000/api/ngo/";
 
 // Define all fields for each step
 const fieldDefinitions = {
@@ -342,6 +343,7 @@ const MemberBasicRegistration = () => {
 
     return fieldDefinitions[stepKeys[activeStep]] || [];
   };
+  console.log(formData, "formdata");
 
   const getStepDataKey = () => {
     const stepKeys = Object.keys(fieldDefinitions);

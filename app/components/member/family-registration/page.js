@@ -12,7 +12,7 @@ import {
 } from "@mui/material";
 import axios from "axios";
 import PricingPlans from "../../pricing/page";
-import ReviewInformation from "../family_individual_registration/ReviewInformation";
+import ReviewInformation from "../../shared/ReviewInformation";
 
 const steps = [
   "Primary Member Information",
@@ -56,12 +56,11 @@ const fieldDefinitions = {
       type: "date",
       required: true,
     },
-    { name: "age", label: "Age", type: "number", required: true },
     {
       name: "marital_status",
       label: "Marital Status",
       type: "select",
-      options: ["Single", "Married"],
+      options: ["Single", "Married", "Widowed", "Divorced", "Separated"],
       required: true,
     },
     {

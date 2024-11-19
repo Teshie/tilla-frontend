@@ -12,7 +12,7 @@ import {
 } from "@mui/material";
 import axios from "axios";
 import PricingPlans from "../../pricing/page";
-import ReviewInformation from "../family_individual_registration/ReviewInformation";
+import ReviewInformation from "../../shared/ReviewInformation";
 
 const steps = ["Primary Member Information", "Address", "Review"];
 const API_POST = "http://api.tillahealthinsurance.com/members/register";
@@ -50,12 +50,11 @@ const fieldDefinitions = {
       type: "date",
       required: true,
     },
-    { name: "age", label: "Age", type: "number", required: true },
     {
       name: "marital_status",
       label: "Marital Status",
       type: "select",
-      options: ["Single", "Married"],
+      options: ["Single", "Married", "Widowed", "Divorced", "Separated"],
       required: true,
     },
     {
@@ -80,14 +79,25 @@ const fieldDefinitions = {
     },
     { name: "city", label: "City", type: "text", required: true },
     {
-      name: "region_or_zone",
-      label: "Region/Zone",
+      name: "region_or_state",
+      label: "Region/State",
       type: "text",
-      required: true,
+      required: false,
     },
     {
-      name: "kifle_ketema_or_zip",
-      label: "Kifle Ketema/Zip Code",
+      name: "wereda",
+      label: "Woreda",
+      type: "text",
+      required: false,
+    },
+    {
+      name: "kifle_ketema",
+      label: "Kifle Ketema",
+      type: "text",
+    },
+    {
+      name: "zip",
+      label: "Zip Code",
       type: "text",
     },
     { name: "country", label: "Country", type: "text", required: true },
