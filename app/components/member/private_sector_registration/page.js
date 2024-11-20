@@ -14,6 +14,8 @@ import {
 import axios from "axios";
 import PricingPlans from "../../pricing/page";
 import ReviewInformation from "../../shared/ReviewInformation";
+import { flattenFormData } from "@/app/utils/flattenFormData";
+import HealthInsuranceRegistrationSuccess from "../../shared/success/page";
 
 const steps = [
   "Company Information",
@@ -22,12 +24,12 @@ const steps = [
   "Emergency Contact Information",
   "Review",
 ];
-const API_POST = "http://api.tillahealthinsurance.com/members/register";
+const API_POST = "http://api.tillahealthinsurance.com/members/private-sectors";
 
 const fieldDefinitions = {
   companyInformation: [
     {
-      name: "company_name",
+      name: "name",
       label: "Company Name",
       type: "text",
       required: true,
@@ -50,27 +52,27 @@ const fieldDefinitions = {
       type: "text",
       required: true,
     },
-    { name: "company_city", label: "City", type: "text", required: true },
+    { name: "city", label: "City", type: "text", required: true },
     {
-      name: "company_region",
+      name: "region",
       label: "Region/Zone",
       type: "text",
       required: true,
     },
     {
-      name: "company_kifle_ketema",
+      name: "kifle_ketema",
       label: "Kifle Ketema/Zip Code",
       type: "text",
     },
-    { name: "company_country", label: "Country", type: "text", required: true },
+    { name: "country", label: "Country", type: "text", required: true },
     {
-      name: "company_phone",
+      name: "phone_number",
       label: "Company Phone Number",
       type: "text",
       required: true,
     },
     {
-      name: "company_email",
+      name: "email_address",
       label: "Company Email Address",
       type: "email",
       required: true,
@@ -79,7 +81,7 @@ const fieldDefinitions = {
       name: "number_of_employees",
       label: "Number of Employees",
       type: "select",
-      options: ["0 to 10", "10 to 50", "50 to 100", "Over 100"],
+      options: ["0_to_10", "10 to 50", "50 to 100", "Over 100"],
       required: true,
     },
     { name: "company_website", label: "Company Website", type: "url" },
@@ -87,31 +89,31 @@ const fieldDefinitions = {
 
   companyContactPerson: [
     {
-      name: "contact_last_name",
+      name: "contact_person_last_name",
       label: "Contact Person’s Last Name",
       type: "text",
       required: true,
     },
     {
-      name: "contact_first_name",
+      name: "contact_person_first_name",
       label: "Contact Person’s First Name",
       type: "text",
       required: true,
     },
     {
-      name: "contact_position",
+      name: "contact_person_position",
       label: "Position/Title",
       type: "text",
       required: true,
     },
     {
-      name: "contact_phone",
+      name: "contact_person_phone_number",
       label: "Contact Person’s Phone Number",
       type: "text",
       required: true,
     },
     {
-      name: "contact_email",
+      name: "contact_person_email_address",
       label: "Contact Person’s Email Address",
       type: "email",
       required: true,
@@ -119,11 +121,11 @@ const fieldDefinitions = {
   ],
   planInformation: [
     {
-      name: "enrollment_coverage_options",
+      name: "enrollment_coverage",
       label: "Enrollment Coverage Options",
       type: "select",
       options: [
-        "All Full-Time Employees",
+        "all_full_time",
         "Full-Time and Part-Time Employees",
         "Select Departments Only",
         "Individual Choice (Employees opt-in)",
@@ -134,7 +136,7 @@ const fieldDefinitions = {
       name: "plan_coverage_type",
       label: "Plan Coverage Type",
       type: "select",
-      options: ["Medical"],
+      options: ["medical"],
       required: true,
     },
     {
@@ -147,20 +149,6 @@ const fieldDefinitions = {
       name: "preferred_end_date",
       label: "Preferred End Date (if applicable)",
       type: "date",
-    },
-  ],
-  employeeEnrollmentOptions: [
-    {
-      name: "enrollment_coverage_options",
-      label: "Enrollment Coverage Options",
-      type: "select",
-      options: [
-        "All Full-Time Employees",
-        "Full-Time and Part-Time Employees",
-        "Select Departments Only",
-        "Individual Choice (Employees opt-in)",
-      ],
-      required: true,
     },
   ],
   emergencyContact: [
@@ -203,14 +191,15 @@ const MemberBasicRegistration = () => {
     planInformation: {},
     emergencyContact: {},
   });
-
+  
   const [errors, setErrors] = useState({});
   const [apiData, setApiData] = useState(null);
   const [showPricing, setShowPricing] = useState(false);
-
+  
+  const flattendData = flattenFormData(formData);
   const fetchApiData = async () => {
     try {
-      const response = await axios.post(API_POST, formData, {
+      const response = await axios.post(API_POST, flattendData, {
         headers: { "Content-Type": "application/json" },
       });
       localStorage.setItem("apiResponseData", JSON.stringify(response.data));
@@ -298,7 +287,7 @@ const MemberBasicRegistration = () => {
   return (
     <div className={`${showPricing ? "" : "mt-10"}`}>
       {showPricing ? (
-        <PricingPlans />
+        <HealthInsuranceRegistrationSuccess />
       ) : (
         <Box sx={{ width: "100%" }}>
           <Stepper activeStep={activeStep} alternativeLabel>

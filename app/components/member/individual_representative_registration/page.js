@@ -13,6 +13,7 @@ import {
 import axios from "axios";
 import PricingPlans from "../../pricing/page";
 import ReviewInformation from "../../shared/ReviewInformation";
+import { flattenFormData } from "@/app/utils/flattenFormData";
 
 const steps = [
   "Representative Informatiom",
@@ -20,7 +21,7 @@ const steps = [
   "Address",
   "Review",
 ];
-const API_POST = "http://api.tillahealthinsurance.com/members/register";
+const API_POST = "https://api.tillahealthinsurance.com/members/individual";
 
 // Define all fields for each step
 const fieldDefinitions = {
@@ -28,24 +29,31 @@ const fieldDefinitions = {
   // Representing Person Information
   representative: [
     {
-      name: "rep_last_name",
+      name: "representative_last_name",
       label: "Representative's Last Name",
       type: "text",
       required: true,
     },
     {
-      name: "rep_first_name",
+      name: "representative_first_name",
       label: "Representative's First Name",
       type: "text",
       required: true,
     },
     {
-      name: "rep_middle_initial",
+      name: "representative_middle_name",
       label: "Representative's Middle Initial",
       type: "text",
     },
     {
-      name: "rep_relationship",
+      name: "gender",
+      label: "Gender",
+      type: "select",
+      options: ["s", "Female"],
+      required: true,
+    },
+    {
+      name: "relationship_to_member",
       label: "Relationship to Primary Member",
       options: ["Legal Guardian", "Parent", "Power of Attorney"],
       type: "select",
@@ -63,6 +71,7 @@ const fieldDefinitions = {
       type: "email",
     },
   ],
+
   user: [
     {
       name: "last_name",
@@ -77,7 +86,7 @@ const fieldDefinitions = {
       required: true,
     },
     {
-      name: "middle_initial",
+      name: "middle_name",
       label: "Primary Member's Middle Initial",
       type: "text",
     },
@@ -85,7 +94,19 @@ const fieldDefinitions = {
       name: "gender",
       label: "Gender",
       type: "select",
-      options: ["Male", "Female"],
+      options: ["s", "Female"],
+      required: true,
+    },
+    {
+      name: "height",
+      label: "Height",
+      type: "text",
+      required: true,
+    },
+    {
+      name: "weight",
+      label: "Weight",
+      type: "text",
       required: true,
     },
     {
@@ -98,47 +119,51 @@ const fieldDefinitions = {
       name: "marital_status",
       label: "Marital Status",
       type: "select",
-      options: ["Single", "Married", "Widowed", "Divorced", "Separated"],
+      options: ["single", "Married", "Widowed", "Divorced", "Separated"],
       required: true,
     },
     {
-      name: "email",
+      name: "email_address",
       label: "Primary Member’s Email Address",
       type: "email",
       required: true,
     },
     {
-      name: "phone",
+      name: "phone_number",
       label: "Primary Member’s Phone Number",
       type: "text",
       required: true,
     },
+    {
+      name: "tin_number",
+      label: "TIN Number",
+      type: "text",
+      required: false,
+    },
   ],
-
-  // Address Information
   address: [
     {
-      name: "address1",
+      name: "mailing_address_line1",
       label: "Mailing Address Line 1",
       type: "text",
       required: true,
     },
     { name: "city", label: "City", type: "text", required: true },
     {
-      name: "region_or_state",
+      name: "region",
       label: "Region/State",
       type: "text",
       required: false,
     },
     {
-      name: "wereda",
-      label: "Woreda",
+      name: "street_address",
+      label: "Street Address",
       type: "text",
       required: false,
     },
     {
-      name: "kifle_ketema_or_zip",
-      label: "Kifle Ketema/Zip Code",
+      name: "kifle_ketema",
+      label: "Kifle Ketema",
       type: "text",
     },
     { name: "country", label: "Country", type: "text", required: true },
@@ -157,9 +182,11 @@ const MemberBasicRegistration = () => {
   const [apiData, setApiData] = useState(null);
   const [showPricing, setShowPricing] = useState(false);
 
+  const flattendData = flattenFormData(formData);
+
   const fetchApiData = async () => {
     try {
-      const response = await axios.post(API_POST, formData, {
+      const response = await axios.post(API_POST, flattendData, {
         headers: { "Content-Type": "application/json" },
       });
       localStorage.setItem("apiResponseData", JSON.stringify(response.data));

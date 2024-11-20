@@ -13,6 +13,7 @@ import {
 import axios from "axios";
 import PricingPlans from "../../pricing/page";
 import ReviewInformation from "../../shared/ReviewInformation";
+import { flattenFormData } from "@/app/utils/flattenFormData";
 
 const steps = [
   "Government Organization Information",
@@ -20,13 +21,14 @@ const steps = [
   "Plan Information",
   "Enrollment Option",
 ];
-const API_POST = "http://api.tillahealthinsurance.com/members/register";
+const API_POST =
+  "http://api.tillahealthinsurance.com/members/government-organizations";
 
 // Define all fields for each step
 const fieldDefinitions = {
   governmentOrganization: [
     {
-      name: "organization_name",
+      name: "name",
       label: "Government Organization Name",
       type: "text",
       required: true,
@@ -38,14 +40,14 @@ const fieldDefinitions = {
       required: true,
     },
     {
-      name: "department_ministry",
+      name: "government_department",
       label: "Government Department/Ministry",
       type: "text",
       required: true,
     },
     {
-      name: "country_operation",
-      label: "Country of Operation",
+      name: "country_of_origin",
+      label: "Country of Origin",
       type: "text",
       required: true,
     },
@@ -56,8 +58,8 @@ const fieldDefinitions = {
       required: true,
     },
     { name: "city", label: "City", type: "text", required: true },
-    { name: "region_zone", label: "Region/Zone", type: "text", required: true },
-    { name: "kifle_ketema_zip", label: "Kifle Ketema/Zip Code", type: "text" },
+    { name: "region", label: "Region/Zone", type: "text", required: true },
+    { name: "kifle_ketema", label: "Kifle Ketema", type: "text" },
     { name: "country", label: "Country", type: "text", required: true },
     {
       name: "phone_number",
@@ -75,44 +77,10 @@ const fieldDefinitions = {
       name: "number_of_employees",
       label: "Number of Employees",
       type: "select",
-      options: ["0 to 10", "10 to 50", "50 to 100", "100 to 500", "Over 500"],
+      options: ["0_to_10", "10 to 50", "50 to 100", "100 to 500", "Over 500"],
       required: true,
     },
-    { name: "website", label: "Organization Website", type: "text" },
-  ],
-  contactPerson: [
-    {
-      name: "last_name",
-      label: "Contact Person’s Last Name",
-      type: "text",
-      required: true,
-    },
-    {
-      name: "first_name",
-      label: "Contact Person’s First Name",
-      type: "text",
-      required: true,
-    },
-    {
-      name: "position_title",
-      label: "Position/Title",
-      type: "text",
-      required: true,
-    },
-    {
-      name: "phone_number",
-      label: "Contact Person’s Phone Number",
-      type: "text",
-      required: true,
-    },
-    {
-      name: "email_address",
-      label: "Contact Person’s Email Address",
-      type: "email",
-      required: true,
-    },
-  ],
-  planInformation: [
+    { name: "company_website", label: "Organization Website", type: "text" },
     {
       name: "plan_coverage_type",
       label: "Plan Coverage Type",
@@ -120,60 +88,37 @@ const fieldDefinitions = {
       options: ["Health", "Dental", "Vision", "Combined Package"],
       required: true,
     },
-    {
-      name: "start_date",
-      label: "Preferred Start Date",
-      type: "date",
-      required: true,
-    },
-    {
-      name: "end_date",
-      label: "Preferred End Date (if applicable)",
-      type: "date",
-    },
   ],
-  enrollmentOptions: [
+  contactPerson: [
     {
-      name: "enrollment_coverage_options",
-      label: "Enrollment Coverage Options",
-      type: "select",
-      options: [
-        "All Full-Time Government Employees",
-        "Full-Time and Part-Time Employees",
-        "Departmental or Ministry-Based Coverage",
-        "Individual Choice (Employees opt-in)",
-      ],
-      required: true,
-    },
-  ],
-  emergencyContact: [
-    {
-      name: "emergency_name",
-      label: "Emergency Contact Name",
+      name: "contact_person_last_name",
+      label: "Contact Person’s Last Name",
       type: "text",
       required: true,
     },
     {
-      name: "relationship",
-      label: "Relationship to Organization (e.g., Legal Advisor, HR Head)",
+      name: "contact_person_first_name",
+      label: "Contact Person’s First Name",
       type: "text",
       required: true,
     },
     {
-      name: "emergency_phone",
-      label: "Emergency Contact Phone Number",
+      name: "contact_person_position",
+      label: "Position/Title",
       type: "text",
       required: true,
     },
     {
-      name: "emergency_email",
-      label: "Emergency Contact Email Address",
+      name: "contact_person_phone_number",
+      label: "Contact Person’s Phone Number",
+      type: "text",
+      required: true,
+    },
+    {
+      name: "contact_person_email_address",
+      label: "Contact Person’s Email Address",
       type: "email",
-    },
-    {
-      name: "emergency_address",
-      label: "Emergency Contact Address (optional)",
-      type: "text",
+      required: true,
     },
   ],
 };
@@ -183,26 +128,25 @@ const MemberBasicRegistration = () => {
   const [formData, setFormData] = useState({
     governmentOrganization: {},
     contactPerson: {},
-    planInformation: {},
-    enrollmentOptions: {},
   });
 
   const [errors, setErrors] = useState({});
   const [apiData, setApiData] = useState(null);
   const [showPricing, setShowPricing] = useState(false);
 
-  const fetchApiData = async () => {
-    try {
-      const response = await axios.post(API_POST, formData, {
-        headers: { "Content-Type": "application/json" },
-      });
-      localStorage.setItem("apiResponseData", JSON.stringify(response.data));
-      setApiData(response.data);
-      setShowPricing(true);
-    } catch (error) {
-      console.error("Error submitting form:", error);
-    }
-  };
+   const flattendData = flattenFormData(formData);
+   const fetchApiData = async () => {
+     try {
+       const response = await axios.post(API_POST, flattendData, {
+         headers: { "Content-Type": "application/json" },
+       });
+       localStorage.setItem("apiResponseData", JSON.stringify(response.data));
+       setApiData(response.data);
+       setShowPricing(true);
+     } catch (error) {
+       console.error("Error submitting form:", error);
+     }
+   };
 
   const handleNext = () => {
     const currentFields = getStepFields();

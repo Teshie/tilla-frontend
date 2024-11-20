@@ -13,58 +13,50 @@ import {
 import axios from "axios";
 import PricingPlans from "../../pricing/page";
 import ReviewInformation from "../../shared/ReviewInformation";
+import { flattenFormData } from "@/app/utils/flattenFormData";
+import HealthInsuranceRegistrationSuccess from "../../shared/success/page";
 
 const steps = [
   "NGO Information",
   "Contact Person Information",
-  "Employee Member Information",
-  "Enrollment  Information",
-  "Identification",
-  "Emergency Contact Information",
   "Review",
 ];
-// const API_POST = "http://api.tillahealthinsurance.com/members/register";
-const API_POST = "http://127.0.0.1:8000/api/ngo/";
+const API_POST = "http://api.tillahealthinsurance.com/members/ngos";
+// const API_POST = "http://127.0.0.1:8000/api/ngo/";
 
-// Define all fields for each step
 const fieldDefinitions = {
   ngo: [
-    { name: "ngo_name", label: "NGO Name", type: "text", required: true },
+    { name: "name", label: "NGO Name", type: "text", required: true },
     {
-      name: "ngo_registration_number",
+      name: "registration_number",
       label: "NGO Registration Number",
       type: "text",
       required: true,
     },
     {
-      name: "ngo_country",
+      name: "country_of_origin",
       label: "NGO Country of Origin",
       type: "text",
       required: true,
     },
     {
-      name: "ngo_street_address",
+      name: "street_address",
       label: "Street Address",
       type: "text",
       required: true,
     },
-    { name: "ngo_city", label: "City", type: "text", required: true },
-    { name: "ngo_region", label: "Region/Zone", type: "text", required: true },
-    { name: "ngo_kifle_ketema", label: "Kifle Ketema/Zip Code", type: "text" },
+    { name: "city", label: "City", type: "text", required: true },
+    { name: "region", label: "Region/Zone", type: "text", required: true },
+    { name: "kifle_ketema", label: "Kifle Ketema/Zip Code", type: "text" },
+
     {
-      name: "ngo_country_address",
-      label: "Country",
-      type: "text",
-      required: true,
-    },
-    {
-      name: "ngo_phone",
+      name: "phone_number",
       label: "NGO Phone Number",
       type: "text",
       required: true,
     },
     {
-      name: "ngo_email",
+      name: "email_address",
       label: "NGO Email Address",
       type: "email",
       required: true,
@@ -72,176 +64,34 @@ const fieldDefinitions = {
   ],
   contact: [
     {
-      name: "contact_last_name",
+      name: "contact_person_last_name",
       label: "Contact Person’s Last Name",
       type: "text",
       required: true,
     },
     {
-      name: "contact_first_name",
+      name: "contact_person_first_name",
       label: "Contact Person’s First Name",
       type: "text",
       required: true,
     },
     {
-      name: "contact_position",
+      name: "contact_person_position",
       label: "Contact Person’s Position/Title",
       type: "text",
       required: true,
     },
     {
-      name: "contact_phone",
+      name: "contact_person_phone_number",
       label: "Contact Person’s Phone Number",
       type: "text",
       required: true,
     },
     {
-      name: "contact_email",
+      name: "contact_person_email_address",
       label: "Contact Person’s Email Address",
       type: "email",
       required: true,
-    },
-  ],
-  employee: [
-    { name: "employee_id", label: "Employee ID", type: "text", required: true },
-    {
-      name: "employee_last_name",
-      label: "Employee's Last Name",
-      type: "text",
-      required: true,
-    },
-    {
-      name: "employee_first_name",
-      label: "Employee's First Name",
-      type: "text",
-      required: true,
-    },
-    {
-      name: "employee_middle_initial",
-      label: "Employee's Middle Initial",
-      type: "text",
-    },
-    {
-      name: "employee_gender",
-      label: "Gender",
-      type: "select",
-      options: ["Male", "Female", "Other"],
-      required: true,
-    },
-    {
-      name: "employee_dob",
-      label: "Employee's Date of Birth",
-      type: "date",
-      required: true,
-    },
-    {
-      name: "employee_age",
-      label: "Employee's Age",
-      type: "number",
-      required: true,
-    },
-    {
-      name: "employee_position",
-      label: "Employee's Position/Title",
-      type: "text",
-    },
-    {
-      name: "employee_department",
-      label: "Employee's Department",
-      type: "text",
-    },
-  ],
-  employeeContact: [
-    {
-      name: "employee_phone",
-      label: "Employee's Phone Number",
-      type: "text",
-      required: true,
-    },
-    {
-      name: "employee_email",
-      label: "Employee's Email Address",
-      type: "email",
-      required: true,
-    },
-    {
-      name: "employee_address",
-      label: "Employee's Mailing Address Line 1",
-      type: "text",
-      required: true,
-    },
-    { name: "employee_city", label: "City", type: "text", required: true },
-    {
-      name: "employee_region",
-      label: "Region/Zone",
-      type: "text",
-      required: true,
-    },
-    {
-      name: "employee_kifle_ketema",
-      label: "Kifle Ketema/Zip Code",
-      type: "text",
-    },
-    {
-      name: "employee_country",
-      label: "Country",
-      type: "text",
-      required: true,
-    },
-  ],
-  enrollment: [
-    {
-      name: "enrollment_start_date",
-      label: "Enrollment Start Date",
-      type: "date",
-      required: true,
-    },
-    { name: "enrollment_end_date", label: "Enrollment End Date", type: "date" },
-    {
-      name: "employee_status",
-      label: "Employee Status",
-      type: "select",
-      options: ["Full-Time", "Part-Time", "Volunteer", "Intern"],
-      required: true,
-    },
-  ],
-  identification: [
-    {
-      name: "national_id",
-      label: "Employee National ID Number",
-      type: "text",
-      required: true,
-    },
-    { name: "member_id", label: "Member ID", type: "text" },
-  ],
-  emergencyContact: [
-    {
-      name: "emergency_name",
-      label: "Emergency Contact Name",
-      type: "text",
-      required: true,
-    },
-    {
-      name: "emergency_relationship",
-      label: "Emergency Contact Relationship",
-      type: "text",
-      required: true,
-    },
-    {
-      name: "emergency_phone",
-      label: "Emergency Contact Phone Number",
-      type: "text",
-      required: true,
-    },
-    {
-      name: "emergency_email",
-      label: "Emergency Contact Email Address",
-      type: "email",
-    },
-    {
-      name: "emergency_address",
-      label: "Emergency Contact Address",
-      type: "text",
     },
   ],
 };
@@ -251,20 +101,16 @@ const MemberBasicRegistration = () => {
   const [formData, setFormData] = useState({
     ngo: {},
     contact: {},
-    employee: {},
-    employeeContact: {},
-    enrollment: {},
-    identification: {},
-    emergencyContact: {},
   });
 
   const [errors, setErrors] = useState({});
   const [apiData, setApiData] = useState(null);
   const [showPricing, setShowPricing] = useState(false);
 
+  const flattendData = flattenFormData(formData);
   const fetchApiData = async () => {
     try {
-      const response = await axios.post(API_POST, formData, {
+      const response = await axios.post(API_POST, flattendData, {
         headers: { "Content-Type": "application/json" },
       });
       localStorage.setItem("apiResponseData", JSON.stringify(response.data));
@@ -353,7 +199,7 @@ const MemberBasicRegistration = () => {
   return (
     <div className={`${showPricing ? "" : "mt-10"}`}>
       {showPricing ? (
-        <PricingPlans />
+        <HealthInsuranceRegistrationSuccess />
       ) : (
         <Box sx={{ width: "100%" }}>
           <Stepper activeStep={activeStep} alternativeLabel>

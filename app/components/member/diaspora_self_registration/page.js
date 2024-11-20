@@ -13,9 +13,10 @@ import {
 import axios from "axios";
 import PricingPlans from "../../pricing/page";
 import ReviewInformation from "../../shared/ReviewInformation";
+import { flattenFormData } from "@/app/utils/flattenFormData";
 
 const steps = ["Primary Member Information", "Address", "Review"];
-const API_POST = "http://api.tillahealthinsurance.com/members/register";
+const API_POST = "http://api.tillahealthinsurance.com/members/diaspora";
 
 // Define all fields for each step
 const fieldDefinitions = {
@@ -33,7 +34,7 @@ const fieldDefinitions = {
       required: true,
     },
     {
-      name: "middle_initial",
+      name: "middle_name",
       label: "Primary Member's Middle Initial",
       type: "text",
     },
@@ -41,7 +42,7 @@ const fieldDefinitions = {
       name: "gender",
       label: "Gender",
       type: "select",
-      options: ["Male", "Female"],
+      options: ["s", "Female"],
       required: true,
     },
     {
@@ -54,17 +55,17 @@ const fieldDefinitions = {
       name: "marital_status",
       label: "Marital Status",
       type: "select",
-      options: ["Single", "Married", "Widowed", "Divorced", "Separated"],
+      options: ["single", "Married", "Widowed", "Divorced", "Separated"],
       required: true,
     },
     {
-      name: "email",
+      name: "email_address",
       label: "Primary Member’s Email Address",
       type: "email",
       required: true,
     },
     {
-      name: "phone",
+      name: "phone_number",
       label: "Primary Member’s Phone Number",
       type: "text",
       required: true,
@@ -72,27 +73,27 @@ const fieldDefinitions = {
   ],
   address: [
     {
-      name: "address1",
+      name: "mailing_address_line1",
       label: "Mailing Address Line 1",
       type: "text",
       required: true,
     },
     { name: "city", label: "City", type: "text", required: true },
     {
-      name: "region_or_state",
+      name: "region",
       label: "Region/State",
       type: "text",
       required: false,
     },
     {
-      name: "wereda",
-      label: "Woreda",
+      name: "street_address",
+      label: "Street Address",
       type: "text",
       required: false,
     },
     {
-      name: "kifle_ketema_or_zip",
-      label: "Kifle Ketema/Zip Code",
+      name: "kifle_ketema",
+      label: "Kifle Ketema",
       type: "text",
     },
     { name: "country", label: "Country", type: "text", required: true },
@@ -104,25 +105,25 @@ const MemberBasicRegistration = () => {
   const [formData, setFormData] = useState({
     user: {},
     address: {},
-    children: [],
   });
 
   const [errors, setErrors] = useState({});
   const [apiData, setApiData] = useState(null);
   const [showPricing, setShowPricing] = useState(false);
 
-  const fetchApiData = async () => {
-    try {
-      const response = await axios.post(API_POST, formData, {
-        headers: { "Content-Type": "application/json" },
-      });
-      localStorage.setItem("apiResponseData", JSON.stringify(response.data));
-      setApiData(response.data);
-      setShowPricing(true);
-    } catch (error) {
-      console.error("Error submitting form:", error);
-    }
-  };
+   const flattendData = flattenFormData(formData);
+   const fetchApiData = async () => {
+     try {
+       const response = await axios.post(API_POST, flattendData, {
+         headers: { "Content-Type": "application/json" },
+       });
+       localStorage.setItem("apiResponseData", JSON.stringify(response.data));
+       setApiData(response.data);
+       setShowPricing(true);
+     } catch (error) {
+       console.error("Error submitting form:", error);
+     }
+   };
 
   const handleNext = () => {
     const currentFields = getStepFields();

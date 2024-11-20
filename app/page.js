@@ -8,7 +8,7 @@ import PricingPlans from "./components/pricing/page";
 export default function Home() {
   return (
     <div>
-      <MemberInformation /> {/* Landing or main page content */}
+      <MemberInformation />
       {/* <PricingPlans/> */}
     </div>
   );

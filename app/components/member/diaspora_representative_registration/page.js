@@ -12,6 +12,8 @@ import {
 } from "@mui/material";
 import axios from "axios";
 import PricingPlans from "../../pricing/page";
+import { flattenFormData } from "@/app/utils/flattenFormData";
+import ReviewInformation from "../../shared/ReviewInformation";
 
 const steps = [
   "Representative Informatiom",
@@ -20,7 +22,7 @@ const steps = [
   "Address",
   "Review",
 ];
-const API_POST = "http://api.tillahealthinsurance.com/members/register";
+const API_POST = "https://api.tillahealthinsurance.com/members/diaspora";
 
 // Define all fields for each step
 const fieldDefinitions = {
@@ -28,19 +30,19 @@ const fieldDefinitions = {
   // Representing Person Information
   representative: [
     {
-      name: "rep_last_name",
+      name: "representative_last_name",
       label: "Representative's Last Name",
       type: "text",
       required: true,
     },
     {
-      name: "rep_first_name",
+      name: "representative_first_name",
       label: "Representative's First Name",
       type: "text",
       required: true,
     },
     {
-      name: "rep_middle_initial",
+      name: "representative_middle_name",
       label: "Representative's Middle Initial",
       type: "text",
     },
@@ -53,13 +55,13 @@ const fieldDefinitions = {
     },
 
     {
-      name: "rep_phone",
+      name: "representative_phone_number",
       label: "Representative’s Phone Number",
       type: "text",
       required: true,
     },
     {
-      name: "rep_email",
+      name: "representative_email_address",
       label: "Representative’s Email Address",
       type: "email",
     },
@@ -67,30 +69,40 @@ const fieldDefinitions = {
   // Address Information
   addressPr: [
     {
-      name: "address1",
+      name: "representative_mailing_address_line1",
       label: "Mailing Address Line 1",
       type: "text",
       required: true,
     },
-    { name: "city", label: "City", type: "text", required: true },
     {
-      name: "region_or_state",
+      name: "representative_street_address",
+      label: "Street Address",
+      type: "text",
+      required: true,
+    },
+    {
+      name: "representative_city",
+      label: "City",
+      type: "text",
+      required: true,
+    },
+    {
+      name: "representative_region",
       label: "Region/State",
       type: "text",
       required: false,
     },
     {
-      name: "wereda",
-      label: "Woreda",
+      name: "representative_kifle_ketema",
+      label: "Kifle Ketema",
       type: "text",
-      required: false,
     },
     {
-      name: "kifle_ketema_or_zip",
-      label: "Kifle Ketema/Zip Code",
+      name: "representative_country",
+      label: "Country",
       type: "text",
+      required: true,
     },
-    { name: "country", label: "Country", type: "text", required: true },
   ],
 
   user: [
@@ -107,7 +119,7 @@ const fieldDefinitions = {
       required: true,
     },
     {
-      name: "middle_initial",
+      name: "middle_name",
       label: "Primary Member's Middle Initial",
       type: "text",
     },
@@ -115,7 +127,7 @@ const fieldDefinitions = {
       name: "gender",
       label: "Gender",
       type: "select",
-      options: ["Male", "Female"],
+      options: ["s", "Female"],
       required: true,
     },
     {
@@ -128,88 +140,48 @@ const fieldDefinitions = {
       name: "marital_status",
       label: "Marital Status",
       type: "select",
-      options: ["Single", "Married", "Widowed", "Divorced", "Separated"],
+      options: ["single", "Married", "Widowed", "Divorced", "Separated"],
       required: true,
     },
     {
-      name: "email",
+      name: "email_address",
       label: "Primary Member’s Email Address",
       type: "email",
       required: true,
     },
     {
-      name: "phone",
+      name: "phone_number",
       label: "Primary Member’s Phone Number",
       type: "text",
       required: true,
     },
   ],
-
-  // Address Information
   address: [
     {
-      name: "address1",
+      name: "mailing_address_line1",
       label: "Mailing Address Line 1",
       type: "text",
       required: true,
     },
     { name: "city", label: "City", type: "text", required: true },
     {
-      name: "region_or_state",
+      name: "region",
       label: "Region/State",
       type: "text",
       required: false,
     },
     {
-      name: "wereda",
-      label: "Woreda",
+      name: "street_address",
+      label: "Street Address",
       type: "text",
       required: false,
     },
     {
-      name: "kifle_ketema_or_zip",
-      label: "Kifle Ketema/Zip Code",
+      name: "kifle_ketema",
+      label: "Kifle Ketema",
       type: "text",
     },
     { name: "country", label: "Country", type: "text", required: true },
-  ],
-
-  // Representing Person Information
-  representative: [
-    {
-      name: "rep_last_name",
-      label: "Representative's Last Name",
-      type: "text",
-      required: true,
-    },
-    {
-      name: "rep_first_name",
-      label: "Representative's First Name",
-      type: "text",
-      required: true,
-    },
-    {
-      name: "rep_middle_initial",
-      label: "Representative's Middle Initial",
-      type: "text",
-    },
-    {
-      name: "rep_relationship",
-      label: "Relationship to Primary Member",
-      type: "text",
-      required: true,
-    },
-    {
-      name: "rep_phone",
-      label: "Representative’s Phone Number",
-      type: "text",
-      required: true,
-    },
-    {
-      name: "rep_email",
-      label: "Representative’s Email Address",
-      type: "email",
-    },
   ],
 };
 
@@ -217,19 +189,19 @@ const MemberBasicRegistration = () => {
   const [activeStep, setActiveStep] = useState(0);
   const [formData, setFormData] = useState({
     representative: {},
-    addressPr:{},
+    addressPr: {},
     user: {},
     address: {},
-    children: [],
   });
 
   const [errors, setErrors] = useState({});
   const [apiData, setApiData] = useState(null);
   const [showPricing, setShowPricing] = useState(false);
 
+  const flattendData = flattenFormData(formData);
   const fetchApiData = async () => {
     try {
-      const response = await axios.post(API_POST, formData, {
+      const response = await axios.post(API_POST, flattendData, {
         headers: { "Content-Type": "application/json" },
       });
       localStorage.setItem("apiResponseData", JSON.stringify(response.data));
@@ -305,11 +277,6 @@ const MemberBasicRegistration = () => {
 
   const getStepFields = () => {
     const stepKeys = Object.keys(fieldDefinitions);
-    if (
-      (activeStep === 3 && formData.selection.plan_type !== "Family") ||
-      (activeStep === 4 && formData.selection.plan_type !== "Family")
-    )
-      return [];
     return fieldDefinitions[stepKeys[activeStep]] || [];
   };
 
