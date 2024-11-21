@@ -13,6 +13,8 @@ import {
 import axios from "axios";
 import PricingPlans from "../../pricing/page";
 import ReviewInformation from "../../shared/ReviewInformation";
+import { flattenFormData } from "@/app/utils/flattenFormData";
+import HealthInsuranceRegistrationSuccess from "../../shared/success/page";
 
 const steps = [
   "Personal Details",
@@ -21,7 +23,7 @@ const steps = [
   "Review",
 ];
 // const API_POST = "http://api.tillahealthinsurance.com/members/register";
-const API_POST = "http://127.0.0.1:8000/api/ngo/";
+const API_POST = "http://127.0.0.1:8000/providers/";
 
 // Define all fields for each step
 const fieldDefinitions = {
@@ -109,9 +111,11 @@ const ProviderRegistrations = () => {
   const [apiData, setApiData] = useState(null);
   const [showPricing, setShowPricing] = useState(false);
 
+  const flattendData = flattenFormData(formData);
+
   const fetchApiData = async () => {
     try {
-      const response = await axios.post(API_POST, formData, {
+      const response = await axios.post(API_POST, flattendData, {
         headers: { "Content-Type": "application/json" },
       });
       localStorage.setItem("apiResponseData", JSON.stringify(response.data));
@@ -121,6 +125,7 @@ const ProviderRegistrations = () => {
       console.error("Error submitting form:", error);
     }
   };
+
 
   const handleNext = () => {
     const currentFields = getStepFields();
@@ -200,7 +205,7 @@ const ProviderRegistrations = () => {
   return (
     <div className={`${showPricing ? "" : "mt-10"}`}>
       {showPricing ? (
-        <PricingPlans />
+        <HealthInsuranceRegistrationSuccess />
       ) : (
         <Box sx={{ width: "100%" }}>
           <Stepper activeStep={activeStep} alternativeLabel>

@@ -34,14 +34,14 @@ export default function HealthInsuranceRegistrationSuccess() {
           </h1>
           <p className="text-gray-700 mb-6">
             Your registration for the Tilla Health insurance plan has been
-            successfully completed. You're now covered!
+            successfully completed.
           </p>
           <div className="flex justify-center space-x-4">
             <Link
               href="/"
               className="px-6 py-3 bg-green-600 text-white font-medium rounded-md shadow hover:bg-green-700 transition"
             >
-              Go to My Plan
+              Go to My Dashboard
             </Link>
             <Link
               href="$"
@@ -56,7 +56,7 @@ export default function HealthInsuranceRegistrationSuccess() {
       {/* Benefits Section */}
       <section
         id="benefits"
-        className="container mx-auto px-6 py-16 grid grid-cols-1 md:grid-cols-3 gap-6"
+        className="sr-only container mx-auto px-6 py-16 grid grid-cols-1 md:grid-cols-3 gap-6"
       >
         <div className="bg-white rounded-lg shadow-md p-6">
           <h2 className="text-xl font-semibold text-green-600 mb-2">
@@ -88,7 +88,7 @@ export default function HealthInsuranceRegistrationSuccess() {
       </section>
 
       {/* Footer */}
-      <footer className="main-color text-white py-6">
+      <footer className="sr-only main-color text-white py-6">
         <div className="container mx-auto px-6 flex flex-col md:flex-row justify-between items-center">
           <p className="text-sm mb-4 md:mb-0">
             &copy; 2024 Tilla Health Insurance. All rights reserved.
